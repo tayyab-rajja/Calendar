@@ -1,0 +1,55 @@
+<div class="calendar-container">
+  <div class="small-calendar">
+    <button mat-raised-button color="accent" (click)="showAppointmentForm()" class="create-button">
+      Create +
+    </button>
+    <app-small-calendar></app-small-calendar>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h2>Payever Calendar</h2>
+    </div>
+    <div class="calendar-grid">
+      <div class="day-header" *ngFor="let day of daysOfWeek">{{ day }}</div>
+      <div
+        class="day-cell"
+        *ngFor="let day of daysInMonth"
+        [attr.data-day]="day"
+        (click)="showAppointmentForm(day)"
+        (keydown.enter)="showAppointmentForm(day)"
+        (keydown.space)="showAppointmentForm(day)"
+        tabindex="0"
+        role="button"
+        cdkDropList
+        [cdkDropListData]="(appointmentsByDay$ | async)?.[day] || []"
+        (cdkDropListDropped)="handleAppointmentDrop($event, day)"
+        [cdkDropListConnectedTo]="connectedTo"
+        [id]="'day-' + day"
+      >
+        <div class="day-number">{{ day }}</div>
+        <ng-container
+          *ngFor="let appointment of (appointmentsByDay$ | async)?.[day]"
+        >
+          <mat-card
+            cdkDrag
+            class="appointment-card"
+            [cdkDragData]="appointment"
+            (click)="displayAppointmentDetails($event, appointment)"
+            [matTooltip]="generateTooltipText(appointment)"
+            matTooltipClass="appointment-tooltip"
+          >
+            <mat-card-content>
+              <div class="appointment-title">
+                {{ appointment.title }}
+                <span class="appointment-time">
+                  {{ formatTimeToAMPM(appointment.startTime) }} -
+                  {{ formatTimeToAMPM(appointment.endTime) }}
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
